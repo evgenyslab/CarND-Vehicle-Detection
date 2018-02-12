@@ -1,0 +1,4 @@
+.ipynb*
+.DS_*
+training_data/
+*.swp

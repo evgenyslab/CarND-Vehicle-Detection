@@ -1,37 +1,234 @@
-# Vehicle Detection
-[![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
+## Vehicle Detection Project
 
-
-In this project, your goal is to write a software pipeline to detect vehicles in a video (start with the test_video.mp4 and later implement on full project_video.mp4), but the main output or product we want you to create is a detailed writeup of the project.  Check out the [writeup template](https://github.com/udacity/CarND-Vehicle-Detection/blob/master/writeup_template.md) for this project and use it as a starting point for creating your own writeup.  
-
-Creating a great writeup:
----
-A great writeup should include the rubric points as well as your description of how you addressed each point.  You should include a detailed description of the code used in each step (with line-number references and code snippets where necessary), and links to other supporting documents or external references.  You should include images in your writeup to demonstrate how your code works with examples.  
-
-All that said, please be concise!  We're not looking for you to write a book here, just a brief description of how you passed each rubric point, and references to the relevant code :). 
-
-You can submit your writeup in markdown or use another method and submit a pdf instead.
-
-The Project
 ---
 
-The goals / steps of this project are the following:
+**Vehicle Detection Project**
+
+The goals of this project are the following:
 
 * Perform a Histogram of Oriented Gradients (HOG) feature extraction on a labeled training set of images and train a classifier Linear SVM classifier
-* Optionally, you can also apply a color transform and append binned color features, as well as histograms of color, to your HOG feature vector. 
-* Note: for those first two steps don't forget to normalize your features and randomize a selection for training and testing.
-* Implement a sliding-window technique and use your trained classifier to search for vehicles in images.
-* Run your pipeline on a video stream (start with the test_video.mp4 and later implement on full project_video.mp4) and create a heat map of recurring detections frame by frame to reject outliers and follow detected vehicles.
+* Implement a sliding-window technique and use the trained classifier to search for vehicles in images.
+* Run your pipeline on a video stream and create a heat map of recurring detections frame by frame to reject outliers and follow detected vehicles.
 * Estimate a bounding box for vehicles detected.
 
-Here are links to the labeled data for [vehicle](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/vehicles.zip) and [non-vehicle](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/non-vehicles.zip) examples to train your classifier.  These example images come from a combination of the [GTI vehicle image database](http://www.gti.ssr.upm.es/data/Vehicle_database.html), the [KITTI vision benchmark suite](http://www.cvlibs.net/datasets/kitti/), and examples extracted from the project video itself.   You are welcome and encouraged to take advantage of the recently released [Udacity labeled dataset](https://github.com/udacity/self-driving-car/tree/master/annotations) to augment your training data.  
+[//]: # (Image References)
+[image1]: ./output_images/car_non_car.png
+[image2]: ./output_images/car_features_RGB.png
+[image3]: ./output_images/car_features_HLS.png
+[image4]: ./output_images/car_features_HSV.png
+[image5]: ./output_images/car_features_YCrCb.png
+[image6]: ./output_images/car_features_YUV.png
+[image7]: ./output_images/noncar_features_RGB.png
+[image8]: ./output_images/noncar_features_HLS.png
+[image9]: ./output_images/noncar_features_HSV.png
+[image10]: ./output_images/noncar_features_YCrCb.png
+[image11]: ./output_images/noncar_features_YUV.png
+[image12]: ./output_images/detection_1.png
+[image13]: ./output_images/detection_2.png
+[image14]: ./output_images/detection_3.png
+[image15]: ./output_images/detection_4.png
+[image16]: ./output_images/detection_5.png
+[image17]: ./output_images/detection_6.png
+[image18]: ./output_images/heatmap_1.png
+[image19]: ./output_images/heatmap_2.png
+[image20]: ./output_images/heatmap_3.png
+[image21]: ./output_images/heatmap_4.png
+[image22]: ./output_images/heatmap_5.png
+[image23]: ./output_images/heatmap_6.png
+[image24]: ./output_images/processed_1.png
+[image25]: ./output_images/processed_2.png
+[image26]: ./output_images/processed_3.png
+[image27]: ./output_images/processed_4.png
+[image28]: ./output_images/processed_5.png
+[image29]: ./output_images/processed_6.png
 
-Some example images for testing your pipeline on single frames are located in the `test_images` folder.  To help the reviewer examine your work, please save examples of the output from each stage of your pipeline in the folder called `ouput_images`, and include them in your writeup for the project by describing what each image shows.    The video called `project_video.mp4` is the video your pipeline should work well on.  
 
-**As an optional challenge** Once you have a working pipeline for vehicle detection, add in your lane-finding algorithm from the last project to do simultaneous lane-finding and vehicle detection!
+---
+## Overview of approach
 
-**If you're feeling ambitious** (also totally optional though), don't stop there!  We encourage you to go out and take video of your own, and show us how you would implement this project on a new video!
+The objective of this project was to apply an SVM learning technique on a video stream to detect and locate cars. To train the SVM, a training and testing set of car and non-car images was provided by Udacity. An sample from the training data set is provided:
 
-## How to write a README
-A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
+![alt text][image1]
 
+The SVM was trained using a combination of Histogram of Oriented Gradients (HOG) features, spatially binned features, and histogram of color features.
+
+All the code is contained in the file Project.py. The file contains fully defined functions for each aspect of the project.
+
+The final implementation of the feature extractor consisted of the following features:
+- HOG features
+- Color space: YUV
+- Hog Orientations: 9
+- HOG pixels per cell: 8
+- HOG cells per block: 2
+- HOG channels: All
+- Spatial binning dimensions: (32, 32)
+- Number of histogram bins: 32  
+
+The sliding window technique was replaced with a HOG sub-sampling window approach recommended in the lecture notes.
+
+### SVM Training
+
+#### HOG
+The following figures represent different responses of the HOG features on image channels for car, and non-car images for comparison. The selection of optimal parameters is described in the next section. HOG features were extracted using the `get_hog_features()` function on line 27.
+
+Spatial features were recovered using the `bin_spatial()` function on line 47. Color histogram features were extracted using `color_hist()` function on line 63.
+
+Feature extraction functions were defined for training over a list of images on line 74: `extract_features()`. Features on individual images were extracted with `single_img_features()` on line 131.
+Both feature extraction functions allow for selecting color spaces and feature parameters.
+
+<p align='center'>
+![alt text][image2]
+Car RGB HOG Features
+
+![alt text][image3]
+Car HLS HOG Features
+
+![alt text][image4]
+Car HSV HOG Features
+
+![alt text][image5]
+Car YCrCb HOG Features
+
+![alt text][image6]
+Car YUV HOG Features
+
+![alt text][image7]
+Non-car RGB HOG Features
+
+![alt text][image8]
+Non-car HLS HOG Features
+
+![alt text][image9]
+Non-car HSV HOG Features
+
+![alt text][image10]
+Non-car YCrCb HOG Features
+
+![alt text][image11]
+Non-car YUV HOG Features
+
+</p>
+
+#### Optimal Parameter Selection & Training
+The optimal set of parameters for the features was chosen by recurrently testing various parameters until the best test result was achieved in training. Various combinations of features on different color channels were tested for SVM training. The selected parameters (described above) were chosen after multiple training runs were conducted.
+
+The function `trainSVC()` was used with manually selected parameters until the desired testing accuracy was achieved. The initial parameter section used a subset of the available data for training and testing. Once the ideal parameters were selected, the complete dataset was used for training. The selected parameters consistently returned testing accuracy over 95%. The trained SVC was saved to allow quick recall in subsequent functions using `loadTrainedSVC()` on line 263.
+
+### Implementation of Vehicle Detection
+Once the SVC was trained, a detection framework was developed. The framework consisted of three main steps:
+1. Find all detected vehicles in an image and return detection boxes.
+2. Filter outliers
+3. Plot results.
+
+The complete framework was wrapped into a `detector()` class defined on line 408. Other parts of the `detector()` include loading the training data.
+
+#### 1. Vehicle Detection
+The vehicle detection implemented using a HOG sub-sampling window approach described in the lecture notes. The sub-sampling partitioned a part of the image into cells, and applied the HOG transform to each cell, and applied the spatial and color histogram feature extractor to larger patches. The input image was cropped in the y-axis to reduce the search space above the front hood, and below the image horizon. Each image was cropped on the y-axis between (400,654) based on the general location of the hood and horizon. The sub-sampling search scale was set to 1.5 based on manual testing for best detections.
+
+The detection code was defined in the `find_cars()` function at line 315. This function applied the detector to a region of interest in the image, and returned all rectangles corresponding to image detection:
+
+<p align='center'>
+![alt text][image12]</p>
+<p align='center'>
+Test image 1</p>
+<p align='center'>
+![alt text][image13]</p>
+<p align='center'>
+Test image 2</p>
+<p align='center'>
+![alt text][image14]</p>
+<p align='center'>
+Test image 3</p>
+<p align='center'>
+![alt text][image15]</p>
+<p align='center'>
+Test image 4</p>
+<p align='center'>
+![alt text][image16]</p>
+<p align='center'>
+Test image 5</p>
+<p align='center'>
+![alt text][image17]</p>
+<p align='center'>
+Test image 6</p>
+
+#### 2. Filter outliers
+The multiple detections produced by `find_Cars()` must be filtered to remove false positives and overlapping detections. This filtering was done by the `filterBoxList()` function on line 383. This function created a heat map image of the hit-boxes for the cars. Then, each boxed region was used to increase the pixel-value on the heat map image. A thresholding was applied to remove false-positives with a user-defined threshold value. This produced the following images:
+
+<p align='center'>
+![alt text][image18]</p>
+<p align='center'>
+Test image 1 heatmap</p>
+<p align='center'>
+![alt text][image19]</p>
+<p align='center'>
+Test image 2 heatmap</p>
+<p align='center'>
+![alt text][image20]</p>
+<p align='center'>
+Test image 3 heatmap</p>
+<p align='center'>
+![alt text][image21]</p>
+<p align='center'>
+Test image 4 heatmap</p>
+<p align='center'>
+![alt text][image22]</p>
+<p align='center'>
+Test image 5 heatmap</p>
+<p align='center'>
+![alt text][image23]</p>
+<p align='center'>
+Test image 6 heatmap</p>
+
+#### 3. Plot results
+The complete pipeline resulted in the following output detections:
+
+<p align='center'>
+![alt text][image24]</p>
+<p align='center'>
+Test image 1 processed</p>
+<p align='center'>
+![alt text][image25]</p>
+<p align='center'>
+Test image 2 processed</p>
+<p align='center'>
+![alt text][image26]</p>
+<p align='center'>
+Test image 3 processed</p>
+<p align='center'>
+![alt text][image27]</p>
+<p align='center'>
+Test image 4 processed</p>
+<p align='center'>
+![alt text][image28]</p>
+<p align='center'>
+Test image 5 processed</p>
+<p align='center'>
+![alt text][image29]</p>
+<p align='center'>
+Test image 6 processed</p>
+
+#### Video
+The processed video of the implemented method can be found [here]('./output_images/project_video.mp4'):
+
+
+
+### Discussion
+The methodology developed worked fairly well for the project video. Several issues are herein highlighted for future consideration.
+
+#### 1. False Positives
+False positives were still detected even when using the heat map. This specifically occurs when vehicles are detected in incoming lanes, or in dark regions of the image. Dark regions can be countered using contrast equalization, or simply rejection of detection in image regions with low light. Oncoming vehicles correctly detected are technically true positives, and may are useful for self-driving cars.
+
+#### 2. Detection Size
+The size of detections in certain parts of the video are much smaller than the actual vehicle. This was due to the heat map threshold setting. This could be improved with further threshold parameter turning, or individual tracking of detected vehicles.
+
+#### 3. Overlapping Detections
+Overlapping detections occurred when the heat map threshold incorrectly separated two close-by vehicles. To counter this issue, several possible solutions could be implemented:
+1. robust tracking of individual vehicles such as Kalman filtering or particle filter in the image plane.
+2. improve segmentation through local tracking techniques such as optical flow.
+
+#### Future Development Recommendation
+The following ideas could be implemented to improve the vehicle detection:
+1. create individual instances of detected car objects with tracking capabilities to improve tracking smoothness and avoid merging detections for close vehicles.
+2. add local tracking techniques around detected vehicles (such as optical flow) to improve boundary separation between the vehicles and the background.
+3. add a Kalman Filter or a particle filter for each detected vehicle.
