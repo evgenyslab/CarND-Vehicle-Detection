@@ -217,7 +217,7 @@ Test image 5 processed
 Test image 6 processed
 
 #### Video
-The processed video of the implemented method can be found [here]('./output_images/project_video.mp4'):
+The processed video of the implemented method can be found [here]('./output_images/project_video.mp4').
 
 
 
