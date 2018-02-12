@@ -1,4 +1,4 @@
 .ipynb*
-.DS_store*
+.DS_store
 training_data/
 *.swp
