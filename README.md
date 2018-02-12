@@ -52,7 +52,7 @@ The objective of this project was to apply an SVM learning technique on a video 
 
 The SVM was trained using a combination of Histogram of Oriented Gradients (HOG) features, spatially binned features, and histogram of color features.
 
-All the code is contained in the file Project.py. The file contains fully defined functions for each aspect of the project.
+All the code is contained in the file `Project.py`. The file contains fully defined functions for each aspect of the project.
 
 The final implementation of the feature extractor consisted of the following features:
 - HOG features
@@ -76,38 +76,47 @@ Spatial features were recovered using the `bin_spatial()` function on line 47. C
 Feature extraction functions were defined for training over a list of images on line 74: `extract_features()`. Features on individual images were extracted with `single_img_features()` on line 131.
 Both feature extraction functions allow for selecting color spaces and feature parameters.
 
-<p align='center'>
+
 ![alt text][image2]
+
 Car RGB HOG Features
 
 ![alt text][image3]
+
 Car HLS HOG Features
 
 ![alt text][image4]
+
 Car HSV HOG Features
 
 ![alt text][image5]
+
 Car YCrCb HOG Features
 
 ![alt text][image6]
+
 Car YUV HOG Features
 
 ![alt text][image7]
+
 Non-car RGB HOG Features
 
 ![alt text][image8]
+
 Non-car HLS HOG Features
 
 ![alt text][image9]
+
 Non-car HSV HOG Features
 
 ![alt text][image10]
+
 Non-car YCrCb HOG Features
 
 ![alt text][image11]
+
 Non-car YUV HOG Features
 
-</p>
 
 #### Optimal Parameter Selection & Training
 The optimal set of parameters for the features was chosen by recurrently testing various parameters until the best test result was achieved in training. Various combinations of features on different color channels were tested for SVM training. The selected parameters (described above) were chosen after multiple training runs were conducted.
@@ -127,86 +136,85 @@ The vehicle detection implemented using a HOG sub-sampling window approach descr
 
 The detection code was defined in the `find_cars()` function at line 315. This function applied the detector to a region of interest in the image, and returned all rectangles corresponding to image detection:
 
-<p align='center'>
-![alt text][image12]</p>
-<p align='center'>
+
+![alt text][image12]
+
 Test image 1</p>
-<p align='center'>
-![alt text][image13]</p>
-<p align='center'>
-Test image 2</p>
-<p align='center'>
-![alt text][image14]</p>
-<p align='center'>
-Test image 3</p>
-<p align='center'>
-![alt text][image15]</p>
-<p align='center'>
-Test image 4</p>
-<p align='center'>
-![alt text][image16]</p>
-<p align='center'>
-Test image 5</p>
-<p align='center'>
-![alt text][image17]</p>
-<p align='center'>
-Test image 6</p>
+
+![alt text][image13]
+
+Test image 2
+
+![alt text][image14]
+
+Test image 3
+
+![alt text][image15]
+
+Test image 4
+
+![alt text][image16]
+
+Test image 5
+
+![alt text][image17]
+
+Test image 6
 
 #### 2. Filter outliers
 The multiple detections produced by `find_Cars()` must be filtered to remove false positives and overlapping detections. This filtering was done by the `filterBoxList()` function on line 383. This function created a heat map image of the hit-boxes for the cars. Then, each boxed region was used to increase the pixel-value on the heat map image. A thresholding was applied to remove false-positives with a user-defined threshold value. This produced the following images:
 
-<p align='center'>
-![alt text][image18]</p>
-<p align='center'>
-Test image 1 heatmap</p>
-<p align='center'>
-![alt text][image19]</p>
-<p align='center'>
-Test image 2 heatmap</p>
-<p align='center'>
-![alt text][image20]</p>
-<p align='center'>
-Test image 3 heatmap</p>
-<p align='center'>
-![alt text][image21]</p>
-<p align='center'>
-Test image 4 heatmap</p>
-<p align='center'>
-![alt text][image22]</p>
-<p align='center'>
-Test image 5 heatmap</p>
-<p align='center'>
-![alt text][image23]</p>
-<p align='center'>
-Test image 6 heatmap</p>
+
+![alt text][image18]
+
+Test image 1 heatmap
+
+![alt text][image19]
+
+Test image 2 heatmap
+
+![alt text][image20]
+
+Test image 3 heatmap
+
+![alt text][image21]
+
+Test image 4 heatmap
+
+![alt text][image22]
+
+Test image 5 heatmap
+
+![alt text][image23]
+
+Test image 6 heatmap
 
 #### 3. Plot results
 The complete pipeline resulted in the following output detections:
 
-<p align='center'>
-![alt text][image24]</p>
-<p align='center'>
-Test image 1 processed</p>
-<p align='center'>
-![alt text][image25]</p>
-<p align='center'>
-Test image 2 processed</p>
-<p align='center'>
-![alt text][image26]</p>
-<p align='center'>
-Test image 3 processed</p>
-<p align='center'>
-![alt text][image27]</p>
-<p align='center'>
-Test image 4 processed</p>
-<p align='center'>
-![alt text][image28]</p>
-<p align='center'>
-Test image 5 processed</p>
-<p align='center'>
-![alt text][image29]</p>
-<p align='center'>
-Test image 6 processed</p>
+![alt text][image24]
+
+Test image 1 processed
+
+![alt text][image25]
+
+Test image 2 processed
+
+![alt text][image26]
+
+Test image 3 processed
+
+![alt text][image27]
+
+Test image 4 processed
+
+![alt text][image28]
+
+Test image 5 processed
+
+![alt text][image29]
+
+Test image 6 processed
 
 #### Video
 The processed video of the implemented method can be found [here]('./output_images/project_video.mp4'):
